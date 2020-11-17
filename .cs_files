@@ -1,0 +1,6 @@
+src/scraper/scraper.ts
+tsconfig.json
+src/server.ts
+package.json
+src/schema/Schema.ts
+package-lock.json
