@@ -4,6 +4,9 @@ import { Card, ScryfallCard } from "../schema/schema";
 export function scryfallifyDeck(deck: Card[]): Promise<ScryfallCard[]> {
   const url = "https://api.scryfall.com/cards/collection";
 
+  /*
+   * Dictionary for recovering the number of each card in the deck.
+   */
   let counts = {};
   for (const card of deck) {
     counts[card.name] = card.count;
@@ -34,6 +37,9 @@ export function scryfallifyDeck(deck: Card[]): Promise<ScryfallCard[]> {
         })
         .catch(reject);
 
+      /*
+       * Stich the two result arrays together
+       */
       if (result1 && result2)
         resolve(result1.data.data.concat(result2.data.data));
     } else {
@@ -42,6 +48,7 @@ export function scryfallifyDeck(deck: Card[]): Promise<ScryfallCard[]> {
           identifiers,
         })
         .catch(reject);
+
       if (result) resolve(result.data.data);
     }
   });

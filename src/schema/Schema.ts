@@ -11,6 +11,7 @@ import {
 
 import { scrapeDeck } from "../scraper/scraper";
 import { scryfallifyDeck } from "../scryfall/scryfallify";
+import { manifyDeck } from "../manify/manify";
 
 @ObjectType("Card")
 @InputType("CardInput")
@@ -25,9 +26,6 @@ export class Card {
 
 @ObjectType({ implements: Card })
 export class Mana extends Card {
-  @Field()
-  pips: string;
-
   @Field()
   score: number;
 
@@ -59,6 +57,42 @@ export class ScryfallCard extends Card {
   oracle_text?: string;
 }
 
+@ObjectType()
+export class WUBRGC {
+  @Field()
+  W: number;
+
+  @Field()
+  U: number;
+
+  @Field()
+  B: number;
+
+  @Field()
+  R: number;
+
+  @Field()
+  G: number;
+
+  @Field()
+  C: number;
+
+  @Field()
+  generic: number;
+}
+
+@ObjectType()
+export class Manified {
+  @Field(() => [Mana])
+  manaDeck: Mana[];
+
+  @Field(() => WUBRGC)
+  sources: WUBRGC;
+
+  @Field(() => WUBRGC)
+  costs: WUBRGC;
+}
+
 @InputType("URLDeckInput")
 class UrlDeckUnion {
   @Field(() => String, { nullable: true })
@@ -83,17 +117,14 @@ export class RootResolver {
     return null;
   }
 
-  @Query(() => [Mana], { nullable: true })
+  @Query(() => Manified, { nullable: true })
   async manify(@Arg("urlORdeck") urlORdeck: UrlDeckUnion) {
-    if (urlORdeck.deck) {
-      //  Call a helper function to map the [Card] into [Mana].
-      //  return [Mana]
-    } else if (urlORdeck.url) {
-      //  Call a helper function to scrape URL into [Card].
-      //     const deck: Card[] = await scrapeCards(urlORdeck.url);
-      //  Call a helper function to map [Card] into [Mana].
-    } else {
-      return null;
-    }
+    if (urlORdeck.deck)
+      return await manifyDeck(await scryfallifyDeck(urlORdeck.deck));
+    if (urlORdeck.url)
+      return await manifyDeck(
+        await scryfallifyDeck(await scrapeDeck(urlORdeck.url))
+      );
+    return null;
   }
 }
