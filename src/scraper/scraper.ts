@@ -1,7 +1,7 @@
 import axios from "axios";
 import cheerio from "cheerio";
 
-import { Card } from "../schema/Schema";
+import { Card } from "../schema/schema";
 
 interface scrapeConfig {
   url: string;
@@ -38,9 +38,9 @@ async function scrape(config: scrapeConfig): Promise<Card[]> {
   });
 }
 
-export function scrapeCards(url: string): Promise<Card[]> {
-  if (url.includes("goldfish")) return goldfish(url);
-  if (url.includes("tapped")) return tapped(url);
+export function scrapeDeck(url: string): Promise<Card[]> {
+  if (url.includes("mtggoldfish.com")) return goldfish(url);
+  if (url.includes("tappedout.net")) return tapped(url);
   return null;
 }
 
