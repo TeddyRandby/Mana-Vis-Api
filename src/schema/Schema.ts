@@ -114,7 +114,7 @@ export class RootResolver {
     if (urlORdeck.deck) return await scryfallifyDeck(urlORdeck.deck);
     if (urlORdeck.url)
       return await scryfallifyDeck(await scrapeDeck(urlORdeck.url));
-    return null;
+    return [];
   }
 
   @Query(() => Manified, { nullable: true })
