@@ -4,7 +4,7 @@
   "description": "Backend for the mana-vis MTG Manabase Analyzer",
   "main": "server.ts",
   "scripts": {
-    "build": "tsc",
+    "build": "",
     "start": "node ./dist/server.js",
     "dev": "nodemon --watch 'src/**/*.ts' --exec ts-node src/server.ts"
   },
