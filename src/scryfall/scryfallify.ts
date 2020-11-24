@@ -6,6 +6,8 @@ export function scryfallifyDeck(deck: Card[]): Promise<ScryfallCard[]> {
 
   /*
    * Dictionary for recovering the number of each card in the deck.
+   *
+   * Split cards currently break this.
    */
   let counts = {};
   for (const card of deck) {
@@ -13,7 +15,7 @@ export function scryfallifyDeck(deck: Card[]): Promise<ScryfallCard[]> {
   }
 
   const addCountToCard = (card: ScryfallCard) => {
-    return { ...card, count: counts[card.name] };
+    return { ...card, count: counts[card.name] ? counts[card.name] : -1 };
   };
 
   return new Promise(async (resolve, reject) => {

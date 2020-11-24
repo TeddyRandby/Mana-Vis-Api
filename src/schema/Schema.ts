@@ -108,7 +108,9 @@ export class RootResolver {
 
   @Query(() => [ScryfallCard])
   async scryfallifyURL(@Arg("url") url: string) {
-    return await scryfallifyDeck(await scrapeDeck(url));
+    const data = await scryfallifyDeck(await scrapeDeck(url));
+    console.log(data);
+    return data;
   }
 
   @Query(() => [Manified])

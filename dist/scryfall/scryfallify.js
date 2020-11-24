@@ -18,13 +18,15 @@ function scryfallifyDeck(deck) {
     const url = "https://api.scryfall.com/cards/collection";
     /*
      * Dictionary for recovering the number of each card in the deck.
+     *
+     * Split cards currently break this.
      */
     let counts = {};
     for (const card of deck) {
         counts[card.name] = card.count;
     }
     const addCountToCard = (card) => {
-        return Object.assign(Object.assign({}, card), { count: counts[card.name] });
+        return Object.assign(Object.assign({}, card), { count: counts[card.name] ? counts[card.name] : -1 });
     };
     return new Promise((resolve, reject) => __awaiter(this, void 0, void 0, function* () {
         const identifiers = deck.map((card) => ({
