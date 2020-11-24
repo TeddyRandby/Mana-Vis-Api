@@ -12,6 +12,10 @@ export function scryfallifyDeck(deck: Card[]): Promise<ScryfallCard[]> {
     counts[card.name] = card.count;
   }
 
+  const addCountToCard = (card: ScryfallCard) => {
+    return { ...card, count: counts[card.name] };
+  };
+
   return new Promise(async (resolve, reject) => {
     const identifiers = deck.map((card) => ({
       name: card.name,
@@ -41,7 +45,9 @@ export function scryfallifyDeck(deck: Card[]): Promise<ScryfallCard[]> {
        * Stich the two result arrays together
        */
       if (result1 && result2)
-        resolve(result1.data.data.concat(result2.data.data));
+        resolve(
+          result1.data.data.concat(result2.data.data).map(addCountToCard)
+        );
     } else {
       const result = await axios
         .post(url, {
@@ -49,7 +55,7 @@ export function scryfallifyDeck(deck: Card[]): Promise<ScryfallCard[]> {
         })
         .catch(reject);
 
-      if (result) resolve(result.data.data);
+      if (result) resolve(result.data.data.map(addCountToCard));
     }
   });
 }

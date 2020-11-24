@@ -23,6 +23,9 @@ function scryfallifyDeck(deck) {
     for (const card of deck) {
         counts[card.name] = card.count;
     }
+    const addCountToCard = (card) => {
+        return Object.assign(Object.assign({}, card), { count: counts[card.name] });
+    };
     return new Promise((resolve, reject) => __awaiter(this, void 0, void 0, function* () {
         const identifiers = deck.map((card) => ({
             name: card.name,
@@ -48,7 +51,7 @@ function scryfallifyDeck(deck) {
              * Stich the two result arrays together
              */
             if (result1 && result2)
-                resolve(result1.data.data.concat(result2.data.data));
+                resolve(result1.data.data.concat(result2.data.data).map(addCountToCard));
         }
         else {
             const result = yield axios_1.default
@@ -57,7 +60,7 @@ function scryfallifyDeck(deck) {
             })
                 .catch(reject);
             if (result)
-                resolve(result.data.data);
+                resolve(result.data.data.map(addCountToCard));
         }
     }));
 }
