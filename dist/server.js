@@ -17,7 +17,7 @@ const serve = () => __awaiter(void 0, void 0, void 0, function* () {
     const server = new apollo_server_1.ApolloServer({
         schema: yield type_graphql_1.buildSchema({ resolvers: [schema_1.RootResolver] }),
     });
-    server.listen().then(({ url }) => {
+    server.listen({ port: process.env.PORT || 4000 }).then(({ url }) => {
         console.log(`Server ready at ${url}`);
     });
 });
