@@ -142,41 +142,20 @@ Manified = __decorate([
     type_graphql_1.ObjectType()
 ], Manified);
 exports.Manified = Manified;
-let UrlDeckUnion = class UrlDeckUnion {
-};
-__decorate([
-    type_graphql_1.Field(() => String, { nullable: true }),
-    __metadata("design:type", String)
-], UrlDeckUnion.prototype, "url", void 0);
-__decorate([
-    type_graphql_1.Field(() => [Card], { nullable: true }),
-    __metadata("design:type", Array)
-], UrlDeckUnion.prototype, "deck", void 0);
-UrlDeckUnion = __decorate([
-    type_graphql_1.InputType("URLDeckInput")
-], UrlDeckUnion);
 let RootResolver = class RootResolver {
     scrape(url) {
         return __awaiter(this, void 0, void 0, function* () {
             return yield scraper_1.scrapeDeck(url);
         });
     }
-    scryfallify(urlORdeck) {
+    scryfallify(deck) {
         return __awaiter(this, void 0, void 0, function* () {
-            if (urlORdeck.deck)
-                return yield scryfallify_1.scryfallifyDeck(urlORdeck.deck);
-            if (urlORdeck.url)
-                return yield scryfallify_1.scryfallifyDeck(yield scraper_1.scrapeDeck(urlORdeck.url));
-            return [];
+            return yield scryfallify_1.scryfallifyDeck(deck);
         });
     }
-    manify(urlORdeck) {
+    manify(deck) {
         return __awaiter(this, void 0, void 0, function* () {
-            if (urlORdeck.deck)
-                return yield manify_1.manifyDeck(yield scryfallify_1.scryfallifyDeck(urlORdeck.deck));
-            if (urlORdeck.url)
-                return yield manify_1.manifyDeck(yield scryfallify_1.scryfallifyDeck(yield scraper_1.scrapeDeck(urlORdeck.url)));
-            return null;
+            return yield manify_1.manifyDeck(yield scryfallify_1.scryfallifyDeck(deck));
         });
     }
 };
@@ -189,16 +168,16 @@ __decorate([
 ], RootResolver.prototype, "scrape", null);
 __decorate([
     type_graphql_1.Query(() => [ScryfallCard]),
-    __param(0, type_graphql_1.Arg("urlORdeck")),
+    __param(0, type_graphql_1.Arg("deck")),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [UrlDeckUnion]),
+    __metadata("design:paramtypes", [Array]),
     __metadata("design:returntype", Promise)
 ], RootResolver.prototype, "scryfallify", null);
 __decorate([
     type_graphql_1.Query(() => Manified, { nullable: true }),
-    __param(0, type_graphql_1.Arg("urlORdeck")),
+    __param(0, type_graphql_1.Arg("deck")),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [UrlDeckUnion]),
+    __metadata("design:paramtypes", [Array]),
     __metadata("design:returntype", Promise)
 ], RootResolver.prototype, "manify", null);
 RootResolver = __decorate([

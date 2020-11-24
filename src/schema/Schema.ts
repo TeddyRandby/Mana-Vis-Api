@@ -93,15 +93,6 @@ export class Manified {
   costs: WUBRGC;
 }
 
-@InputType("URLDeckInput")
-class UrlDeckUnion {
-  @Field(() => String, { nullable: true })
-  url?: string;
-
-  @Field(() => [Card], { nullable: true })
-  deck?: Card[];
-}
-
 @Resolver()
 export class RootResolver {
   @Query(() => [Card])
@@ -110,21 +101,12 @@ export class RootResolver {
   }
 
   @Query(() => [ScryfallCard])
-  async scryfallify(@Arg("urlORdeck") urlORdeck: UrlDeckUnion) {
-    if (urlORdeck.deck) return await scryfallifyDeck(urlORdeck.deck);
-    if (urlORdeck.url)
-      return await scryfallifyDeck(await scrapeDeck(urlORdeck.url));
-    return [];
+  async scryfallify(@Arg("deck") deck: Card[]) {
+    return await scryfallifyDeck(deck);
   }
 
   @Query(() => Manified, { nullable: true })
-  async manify(@Arg("urlORdeck") urlORdeck: UrlDeckUnion) {
-    if (urlORdeck.deck)
-      return await manifyDeck(await scryfallifyDeck(urlORdeck.deck));
-    if (urlORdeck.url)
-      return await manifyDeck(
-        await scryfallifyDeck(await scrapeDeck(urlORdeck.url))
-      );
-    return null;
+  async manify(@Arg("deck") deck: Card[]) {
+    return await manifyDeck(await scryfallifyDeck(deck));
   }
 }
