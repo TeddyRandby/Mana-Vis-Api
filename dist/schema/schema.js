@@ -161,7 +161,6 @@ let RootResolver = class RootResolver {
     scryfallifyURL(url) {
         return __awaiter(this, void 0, void 0, function* () {
             const data = yield scryfallify_1.scryfallifyDeck(yield scraper_1.scrapeDeck(url));
-            console.log(data);
             return data;
         });
     }

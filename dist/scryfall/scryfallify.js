@@ -26,7 +26,13 @@ function scryfallifyDeck(deck) {
         counts[card.name] = card.count;
     }
     const addCountToCard = (card) => {
-        return Object.assign(Object.assign({}, card), { count: counts[card.name] ? counts[card.name] : -1 });
+        if (counts[card.name])
+            return Object.assign(Object.assign({}, card), { count: counts[card.name] });
+        /*
+         * This inital check fails if the original name doesn't match the name scryfall gives back.
+         * This happens with split cards, usually.
+         */
+        return Object.assign(Object.assign({}, card), { count: counts[Object.keys(counts).find((key) => card.name.includes(key))] });
     };
     return new Promise((resolve, reject) => __awaiter(this, void 0, void 0, function* () {
         const identifiers = deck.map((card) => ({
