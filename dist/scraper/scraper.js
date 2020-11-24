@@ -29,7 +29,9 @@ function scrape(config) {
             deckSection.each((_, elem) => {
                 const count = parseInt($(elem).find(config.relativeCardCountSelector).text());
                 const name = $(elem).find(config.relativeCardNameSelector).text();
-                if (name && count)
+                if (name &&
+                    count &&
+                    !cards.find((c) => c.name === name && c.count === count))
                     cards.push({ count, name });
             });
             resolve(cards);

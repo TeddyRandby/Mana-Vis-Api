@@ -31,7 +31,12 @@ async function scrape(config: scrapeConfig): Promise<Card[]> {
       );
       const name = $(elem).find(config.relativeCardNameSelector).text();
 
-      if (name && count) cards.push({ count, name });
+      if (
+        name &&
+        count &&
+        !cards.find((c) => c.name === name && c.count === count)
+      )
+        cards.push({ count, name });
     });
 
     resolve(cards);
