@@ -14,8 +14,8 @@ import { scryfallifyDeck } from "../scryfall/scryfallify";
 import { manifyDeck } from "../manify/manify";
 
 @ObjectType("Card")
-@InputType("CardInput")
 @InterfaceType("CardInterface")
+@InputType("CardInput")
 export class Card {
   @Field(() => String)
   name: string;
@@ -93,6 +93,12 @@ export class Manified {
   costs: WUBRGC;
 }
 
+@InputType("DeckInput")
+export class Deck {
+  @Field(() => [Card])
+  cards: Card[];
+}
+
 @Resolver()
 export class RootResolver {
   @Query(() => [Card])
@@ -100,13 +106,13 @@ export class RootResolver {
     return await scrapeDeck(url);
   }
 
-  @Query(() => [ScryfallCard])
-  async scryfallify(@Arg("deck") deck: Card[]) {
-    return await scryfallifyDeck(deck);
+  @Query(() => [ScryfallCard], { nullable: true })
+  async scryfallify(@Arg("deck") deck: Deck) {
+    return await scryfallifyDeck(deck.cards);
   }
 
   @Query(() => Manified, { nullable: true })
-  async manify(@Arg("deck") deck: Card[]) {
-    return await manifyDeck(await scryfallifyDeck(deck));
+  async manify(@Arg("deck") deck: Deck) {
+    return await manifyDeck(await scryfallifyDeck(deck.cards));
   }
 }

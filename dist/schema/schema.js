@@ -21,7 +21,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.RootResolver = exports.Manified = exports.WUBRGC = exports.ScryfallCard = exports.Mana = exports.Card = void 0;
+exports.RootResolver = exports.Deck = exports.Manified = exports.WUBRGC = exports.ScryfallCard = exports.Mana = exports.Card = void 0;
 const type_graphql_1 = require("type-graphql");
 const scraper_1 = require("../scraper/scraper");
 const scryfallify_1 = require("../scryfall/scryfallify");
@@ -38,8 +38,8 @@ __decorate([
 ], Card.prototype, "count", void 0);
 Card = __decorate([
     type_graphql_1.ObjectType("Card"),
-    type_graphql_1.InputType("CardInput"),
-    type_graphql_1.InterfaceType("CardInterface")
+    type_graphql_1.InterfaceType("CardInterface"),
+    type_graphql_1.InputType("CardInput")
 ], Card);
 exports.Card = Card;
 let Mana = class Mana extends Card {
@@ -142,6 +142,16 @@ Manified = __decorate([
     type_graphql_1.ObjectType()
 ], Manified);
 exports.Manified = Manified;
+let Deck = class Deck {
+};
+__decorate([
+    type_graphql_1.Field(() => [Card]),
+    __metadata("design:type", Array)
+], Deck.prototype, "cards", void 0);
+Deck = __decorate([
+    type_graphql_1.InputType("DeckInput")
+], Deck);
+exports.Deck = Deck;
 let RootResolver = class RootResolver {
     scrape(url) {
         return __awaiter(this, void 0, void 0, function* () {
@@ -150,12 +160,12 @@ let RootResolver = class RootResolver {
     }
     scryfallify(deck) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield scryfallify_1.scryfallifyDeck(deck);
+            return yield scryfallify_1.scryfallifyDeck(deck.cards);
         });
     }
     manify(deck) {
         return __awaiter(this, void 0, void 0, function* () {
-            return yield manify_1.manifyDeck(yield scryfallify_1.scryfallifyDeck(deck));
+            return yield manify_1.manifyDeck(yield scryfallify_1.scryfallifyDeck(deck.cards));
         });
     }
 };
@@ -167,17 +177,17 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], RootResolver.prototype, "scrape", null);
 __decorate([
-    type_graphql_1.Query(() => [ScryfallCard]),
+    type_graphql_1.Query(() => [ScryfallCard], { nullable: true }),
     __param(0, type_graphql_1.Arg("deck")),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Array]),
+    __metadata("design:paramtypes", [Deck]),
     __metadata("design:returntype", Promise)
 ], RootResolver.prototype, "scryfallify", null);
 __decorate([
     type_graphql_1.Query(() => Manified, { nullable: true }),
     __param(0, type_graphql_1.Arg("deck")),
     __metadata("design:type", Function),
-    __metadata("design:paramtypes", [Array]),
+    __metadata("design:paramtypes", [Deck]),
     __metadata("design:returntype", Promise)
 ], RootResolver.prototype, "manify", null);
 RootResolver = __decorate([
