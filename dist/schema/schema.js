@@ -167,7 +167,7 @@ let RootResolver = class RootResolver {
                 return yield scryfallify_1.scryfallifyDeck(urlORdeck.deck);
             if (urlORdeck.url)
                 return yield scryfallify_1.scryfallifyDeck(yield scraper_1.scrapeDeck(urlORdeck.url));
-            return null;
+            return [];
         });
     }
     manify(urlORdeck) {
