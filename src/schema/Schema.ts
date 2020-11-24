@@ -106,13 +106,23 @@ export class RootResolver {
     return await scrapeDeck(url);
   }
 
+  @Query(() => [ScryfallCard])
+  async scryfallifyURL(@Arg("url") url: string) {
+    return await scryfallifyDeck(await scrapeDeck(url));
+  }
+
+  @Query(() => [Manified])
+  async manifyURL(@Arg("url") url: string) {
+    return await manifyDeck(await scryfallifyDeck(await scrapeDeck(url)));
+  }
+
   @Query(() => [ScryfallCard], { nullable: true })
-  async scryfallify(@Arg("deck") deck: Deck) {
+  async scryfallifyDeck(@Arg("deck") deck: Deck) {
     return await scryfallifyDeck(deck.cards);
   }
 
   @Query(() => Manified, { nullable: true })
-  async manify(@Arg("deck") deck: Deck) {
+  async manifyDeck(@Arg("deck") deck: Deck) {
     return await manifyDeck(await scryfallifyDeck(deck.cards));
   }
 }
