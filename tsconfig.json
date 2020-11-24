@@ -6,6 +6,8 @@
     "lib": ["ES6", "ESNext.AsyncIterable"],
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "rootDir": "./src",
+    "outDir": "./dist"
   }
 }

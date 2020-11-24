@@ -4,6 +4,7 @@
   "description": "Backend for the mana-vis MTG Manabase Analyzer",
   "main": "server.ts",
   "scripts": {
+    "build": "tsc",
     "start": "node dist/index.js",
     "dev": "nodemon --watch 'src/**/*.ts' --exec ts-node src/server.ts"
   },
@@ -16,13 +17,13 @@
     "class-validator": "^0.12.2",
     "graphql": "^15.4.0",
     "reflect-metadata": "^0.1.13",
-    "type-graphql": "^1.1.1"
+    "type-graphql": "^1.1.1",
+    "typescript": "^4.0.5"
   },
   "devDependencies": {
     "@types/axios": "^0.14.0",
     "@types/cheerio": "^0.22.22",
     "nodemon": "^2.0.6",
-    "ts-node": "^9.0.0",
-    "typescript": "^4.0.5"
+    "ts-node": "^9.0.0"
   }
 }
