@@ -19,21 +19,12 @@ function scryfallifyDeck(deck) {
     /*
      * Dictionary for recovering the number of each card in the deck.
      *
-     * Split cards currently break this.
+     * What about cards in sideboard and mainboard
      */
     let counts = {};
     for (const card of deck) {
         counts[card.name] = card.count;
     }
-    const addCountToCard = (card) => {
-        if (counts[card.name])
-            return Object.assign(Object.assign({}, card), { count: counts[card.name] });
-        /*
-         * This inital check fails if the original name doesn't match the name scryfall gives back.
-         * This happens with split cards, usually.
-         */
-        return Object.assign(Object.assign({}, card), { count: counts[Object.keys(counts).find((key) => card.name.includes(key))] });
-    };
     return new Promise((resolve, reject) => __awaiter(this, void 0, void 0, function* () {
         const identifiers = deck.map((card) => ({
             name: card.name,
@@ -58,8 +49,10 @@ function scryfallifyDeck(deck) {
             /*
              * Stich the two result arrays together
              */
-            if (result1 && result2)
-                resolve(result1.data.data.concat(result2.data.data).map(addCountToCard));
+            if (result1 && result2) {
+                const data = result1.data.data.concat(result2.data.data);
+                resolve(deck.map((c) => (Object.assign(Object.assign({}, c), data.find((d) => d.name === c.name)))));
+            }
         }
         else {
             const result = yield axios_1.default
@@ -68,7 +61,7 @@ function scryfallifyDeck(deck) {
             })
                 .catch(reject);
             if (result)
-                resolve(result.data.data.map(addCountToCard));
+                resolve(deck.map((c) => (Object.assign(Object.assign({}, c), result.data.data.find((d) => d.name === c.name)))));
         }
     }));
 }
