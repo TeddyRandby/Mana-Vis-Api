@@ -39,7 +39,16 @@ async function scrape(config: scrapeConfig): Promise<Card[]> {
         cards.push({ count, name });
     });
 
-    resolve(cards);
+    /*
+     * Combine repeated cards.
+     */
+    let data = {};
+    cards.forEach((c) => {
+      if (data[c.name]) data[c.name] += c.count;
+      else data[c.name] = c.count;
+    });
+
+    resolve(Object.keys(data).map((key) => ({ name: key, count: data[key] })));
   });
 }
 

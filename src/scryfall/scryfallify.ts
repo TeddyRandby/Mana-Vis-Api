@@ -4,16 +4,6 @@ import { Card, ScryfallCard } from "../schema/schema";
 export function scryfallifyDeck(deck: Card[]): Promise<ScryfallCard[]> {
   const url = "https://api.scryfall.com/cards/collection";
 
-  /*
-   * Dictionary for recovering the number of each card in the deck.
-   *
-   * What about cards in sideboard and mainboard
-   */
-  let counts = {};
-  for (const card of deck) {
-    counts[card.name] = card.count;
-  }
-
   return new Promise(async (resolve, reject) => {
     const identifiers = deck.map((card) => ({
       name: card.name,

@@ -16,15 +16,6 @@ exports.scryfallifyDeck = void 0;
 const axios_1 = __importDefault(require("axios"));
 function scryfallifyDeck(deck) {
     const url = "https://api.scryfall.com/cards/collection";
-    /*
-     * Dictionary for recovering the number of each card in the deck.
-     *
-     * What about cards in sideboard and mainboard
-     */
-    let counts = {};
-    for (const card of deck) {
-        counts[card.name] = card.count;
-    }
     return new Promise((resolve, reject) => __awaiter(this, void 0, void 0, function* () {
         const identifiers = deck.map((card) => ({
             name: card.name,

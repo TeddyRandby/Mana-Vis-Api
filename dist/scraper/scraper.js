@@ -34,7 +34,17 @@ function scrape(config) {
                     !cards.find((c) => c.name === name && c.count === count))
                     cards.push({ count, name });
             });
-            resolve(cards);
+            /*
+             * Combine repeated cards.
+             */
+            let data = {};
+            cards.forEach((c) => {
+                if (data[c.name])
+                    data[c.name] += c.count;
+                else
+                    data[c.name] = c.count;
+            });
+            resolve(Object.keys(data).map((key) => ({ name: key, count: data[key] })));
         }));
     });
 }
