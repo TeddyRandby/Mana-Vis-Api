@@ -37,7 +37,7 @@ export function scryfallifyDeck(deck: Card[]): Promise<ScryfallCard[]> {
         resolve(
           deck.map((c) => ({
             ...c,
-            ...data.find((d: any) => d.name === c.name),
+            ...data.find((d: any) => d.name.includes(c.name)),
           }))
         );
       }
@@ -48,13 +48,14 @@ export function scryfallifyDeck(deck: Card[]): Promise<ScryfallCard[]> {
         })
         .catch(reject);
 
-      if (result)
+      if (result) {
         resolve(
           deck.map((c) => ({
             ...c,
-            ...result.data.data.find((d: any) => d.name === c.name),
+            ...result.data.data.find((d: any) => d.name.includes(c.name)),
           }))
         );
+      }
     }
   });
 }

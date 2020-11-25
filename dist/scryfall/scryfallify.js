@@ -42,7 +42,7 @@ function scryfallifyDeck(deck) {
              */
             if (result1 && result2) {
                 const data = result1.data.data.concat(result2.data.data);
-                resolve(deck.map((c) => (Object.assign(Object.assign({}, c), data.find((d) => d.name === c.name)))));
+                resolve(deck.map((c) => (Object.assign(Object.assign({}, c), data.find((d) => d.name.includes(c.name))))));
             }
         }
         else {
@@ -51,8 +51,9 @@ function scryfallifyDeck(deck) {
                 identifiers,
             })
                 .catch(reject);
-            if (result)
-                resolve(deck.map((c) => (Object.assign(Object.assign({}, c), result.data.data.find((d) => d.name === c.name)))));
+            if (result) {
+                resolve(deck.map((c) => (Object.assign(Object.assign({}, c), result.data.data.find((d) => d.name.includes(c.name))))));
+            }
         }
     }));
 }
