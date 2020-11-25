@@ -5,6 +5,8 @@ export function scryfallifyDeck(deck: Card[]): Promise<ScryfallCard[]> {
   const url = "https://api.scryfall.com/cards/collection";
 
   return new Promise(async (resolve, reject) => {
+    if (!deck) reject("Invalid deck");
+
     const identifiers = deck.map((card) => ({
       name: card.name,
     }));

@@ -53,9 +53,9 @@ async function scrape(config: scrapeConfig): Promise<Card[]> {
 }
 
 export function scrapeDeck(url: string): Promise<Card[]> {
-  if (url.includes("mtggoldfish.com")) return goldfish(url);
-  if (url.includes("tappedout.net")) return tapped(url);
-  return null;
+  if (url.includes("https://www.mtggoldfish.com")) return goldfish(url);
+  if (url.includes("https://www.tappedout.net")) return tapped(url);
+  return Promise.reject("We can't parse " + url + " yet. We're working on it!");
 }
 
 // Scrapers for various deck sites begin here

@@ -17,6 +17,8 @@ const axios_1 = __importDefault(require("axios"));
 function scryfallifyDeck(deck) {
     const url = "https://api.scryfall.com/cards/collection";
     return new Promise((resolve, reject) => __awaiter(this, void 0, void 0, function* () {
+        if (!deck)
+            reject("Invalid deck");
         const identifiers = deck.map((card) => ({
             name: card.name,
         }));

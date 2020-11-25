@@ -49,11 +49,11 @@ function scrape(config) {
     });
 }
 function scrapeDeck(url) {
-    if (url.includes("mtggoldfish.com"))
+    if (url.includes("https://www.mtggoldfish.com"))
         return goldfish(url);
-    if (url.includes("tappedout.net"))
+    if (url.includes("https://www.tappedout.net"))
         return tapped(url);
-    return null;
+    return Promise.reject("We can't parse " + url + " yet. We're working on it!");
 }
 exports.scrapeDeck = scrapeDeck;
 // Scrapers for various deck sites begin here

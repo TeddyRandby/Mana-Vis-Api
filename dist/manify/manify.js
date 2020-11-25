@@ -3,6 +3,8 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.manifyDeck = void 0;
 function manifyDeck(deck) {
     return new Promise((resolve, reject) => {
+        if (!deck)
+            reject("Invalid deck");
         const sources = calculateManaBase(deck);
         const costs = calculateManaCosts(deck);
         const manaDeck = deck.map((c) => (Object.assign(Object.assign({}, c), { score: 0 })));
