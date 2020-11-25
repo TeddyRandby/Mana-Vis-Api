@@ -21,7 +21,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.RootResolver = exports.Deck = exports.Manified = exports.WUBRGC = exports.ScryfallCard = exports.Mana = exports.Card = void 0;
+exports.RootResolver = exports.Deck = exports.Manified = exports.WUBRGC = exports.ManaCard = exports.ScryfallCard = exports.Card = void 0;
 const type_graphql_1 = require("type-graphql");
 const scraper_1 = require("../scraper/scraper");
 const scryfallify_1 = require("../scryfall/scryfallify");
@@ -42,20 +42,6 @@ Card = __decorate([
     type_graphql_1.InputType("CardInput")
 ], Card);
 exports.Card = Card;
-let Mana = class Mana extends Card {
-};
-__decorate([
-    type_graphql_1.Field(),
-    __metadata("design:type", Number)
-], Mana.prototype, "score", void 0);
-__decorate([
-    type_graphql_1.Field(),
-    __metadata("design:type", Number)
-], Mana.prototype, "cmc", void 0);
-Mana = __decorate([
-    type_graphql_1.ObjectType({ implements: Card })
-], Mana);
-exports.Mana = Mana;
 let ScryfallCard = class ScryfallCard extends Card {
 };
 __decorate([
@@ -87,9 +73,20 @@ __decorate([
     __metadata("design:type", String)
 ], ScryfallCard.prototype, "oracle_text", void 0);
 ScryfallCard = __decorate([
-    type_graphql_1.ObjectType({ implements: Card })
+    type_graphql_1.ObjectType({ implements: Card }),
+    type_graphql_1.InterfaceType("ScryfallCardInterface")
 ], ScryfallCard);
 exports.ScryfallCard = ScryfallCard;
+let ManaCard = class ManaCard extends ScryfallCard {
+};
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", Number)
+], ManaCard.prototype, "score", void 0);
+ManaCard = __decorate([
+    type_graphql_1.ObjectType({ implements: ScryfallCard })
+], ManaCard);
+exports.ManaCard = ManaCard;
 let WUBRGC = class WUBRGC {
 };
 __decorate([
@@ -127,7 +124,7 @@ exports.WUBRGC = WUBRGC;
 let Manified = class Manified {
 };
 __decorate([
-    type_graphql_1.Field(() => [Mana]),
+    type_graphql_1.Field(() => [ManaCard]),
     __metadata("design:type", Array)
 ], Manified.prototype, "manaDeck", void 0);
 __decorate([
@@ -195,7 +192,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], RootResolver.prototype, "scryfallifyURL", null);
 __decorate([
-    type_graphql_1.Query(() => [Manified]),
+    type_graphql_1.Query(() => Manified),
     __param(0, type_graphql_1.Arg("url")),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),

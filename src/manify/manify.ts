@@ -1,10 +1,10 @@
-import { ScryfallCard, Mana, Manified, WUBRGC } from "../schema/schema";
+import { ScryfallCard, ManaCard, Manified, WUBRGC } from "../schema/schema";
 
 export function manifyDeck(deck: ScryfallCard[]): Promise<Manified> {
   return new Promise((resolve, reject) => {
     const sources = calculateManaBase(deck);
     const costs = calculateManaCosts(deck);
-    const manaDeck: Mana[] = [];
+    const manaDeck: ManaCard[] = deck.map((c) => ({ ...c, score: 0 }));
 
     resolve({ sources, costs, manaDeck });
   });

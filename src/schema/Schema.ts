@@ -25,15 +25,7 @@ export class Card {
 }
 
 @ObjectType({ implements: Card })
-export class Mana extends Card {
-  @Field()
-  score: number;
-
-  @Field()
-  cmc: number;
-}
-
-@ObjectType({ implements: Card })
+@InterfaceType("ScryfallCardInterface")
 export class ScryfallCard extends Card {
   @Field()
   scryfall_uri: string;
@@ -55,6 +47,12 @@ export class ScryfallCard extends Card {
 
   @Field({ nullable: true })
   oracle_text?: string;
+}
+
+@ObjectType({ implements: ScryfallCard })
+export class ManaCard extends ScryfallCard {
+  @Field()
+  score: number;
 }
 
 @ObjectType()
@@ -83,8 +81,8 @@ export class WUBRGC {
 
 @ObjectType()
 export class Manified {
-  @Field(() => [Mana])
-  manaDeck: Mana[];
+  @Field(() => [ManaCard])
+  manaDeck: ManaCard[];
 
   @Field(() => WUBRGC)
   sources: WUBRGC;
@@ -112,7 +110,7 @@ export class RootResolver {
     return data;
   }
 
-  @Query(() => [Manified])
+  @Query(() => Manified)
   async manifyURL(@Arg("url") url: string) {
     return await manifyDeck(await scryfallifyDeck(await scrapeDeck(url)));
   }

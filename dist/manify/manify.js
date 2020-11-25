@@ -5,7 +5,7 @@ function manifyDeck(deck) {
     return new Promise((resolve, reject) => {
         const sources = calculateManaBase(deck);
         const costs = calculateManaCosts(deck);
-        const manaDeck = [];
+        const manaDeck = deck.map((c) => (Object.assign(Object.assign({}, c), { score: 0 })));
         resolve({ sources, costs, manaDeck });
     });
 }
