@@ -1,7 +1,7 @@
-import { ScryfallCard, ManaCard, Manified, WUBRGC } from "../schema/Schema";
+import { ScryfallCard, ManaCard, WUBRGC } from "../schema/Schema";
 
 
-export function manifyDeck(deck: ScryfallCard[]): Promise<Manified> {
+export function manifyDeck(deck: ScryfallCard[]): Promise<ManaCard[]> {
   return new Promise((resolve, reject) => {
 
     if (!deck) reject("Invalid deck");
@@ -13,7 +13,7 @@ export function manifyDeck(deck: ScryfallCard[]): Promise<Manified> {
 
     const manaDeck: ManaCard[] = deck.map((c) => ({ ...c, score: (cardTotals[c.name] / 5) || 0 }));
 
-    resolve({ manaDeck });
+    resolve(manaDeck);
   });
 }
 

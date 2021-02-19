@@ -9,7 +9,7 @@ function manifyDeck(deck) {
         for (let i = 0; i < 500; i++)
             simulateGame(deck, cardTotals, 5);
         const manaDeck = deck.map((c) => (Object.assign(Object.assign({}, c), { score: (cardTotals[c.name] / 5) || 0 })));
-        resolve({ manaDeck });
+        resolve(manaDeck);
     });
 }
 exports.manifyDeck = manifyDeck;

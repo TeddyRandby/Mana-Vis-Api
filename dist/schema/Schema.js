@@ -21,7 +21,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.RootResolver = exports.Deck = exports.Manified = exports.WUBRGC = exports.ManaCard = exports.ScryfallCard = exports.Card = void 0;
+exports.RootResolver = exports.Deck = exports.WUBRGC = exports.ManaCard = exports.ScryfallCard = exports.Card = void 0;
 const type_graphql_1 = require("type-graphql");
 const scraper_1 = require("../scraper/scraper");
 const scryfallify_1 = require("../scryfall/scryfallify");
@@ -121,16 +121,6 @@ WUBRGC = __decorate([
     type_graphql_1.ObjectType()
 ], WUBRGC);
 exports.WUBRGC = WUBRGC;
-let Manified = class Manified {
-};
-__decorate([
-    type_graphql_1.Field(() => [ManaCard]),
-    __metadata("design:type", Array)
-], Manified.prototype, "manaDeck", void 0);
-Manified = __decorate([
-    type_graphql_1.ObjectType()
-], Manified);
-exports.Manified = Manified;
 let Deck = class Deck {
 };
 __decorate([
@@ -184,7 +174,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], RootResolver.prototype, "scryfallifyURL", null);
 __decorate([
-    type_graphql_1.Query(() => Manified),
+    type_graphql_1.Query(() => [ManaCard]),
     __param(0, type_graphql_1.Arg("url")),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [String]),
@@ -198,7 +188,7 @@ __decorate([
     __metadata("design:returntype", Promise)
 ], RootResolver.prototype, "scryfallifyDeck", null);
 __decorate([
-    type_graphql_1.Query(() => Manified, { nullable: true }),
+    type_graphql_1.Query(() => [ManaCard], { nullable: true }),
     __param(0, type_graphql_1.Arg("deck")),
     __metadata("design:type", Function),
     __metadata("design:paramtypes", [Deck]),
