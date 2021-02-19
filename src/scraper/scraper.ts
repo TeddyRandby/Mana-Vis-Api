@@ -29,7 +29,7 @@ async function scrape(config: scrapeConfig): Promise<Card[]> {
       const count = parseInt(
         $(elem).find(config.relativeCardCountSelector).text()
       );
-      const name = $(elem).find(config.relativeCardNameSelector).text();
+      const name = $(elem).find(config.relativeCardNameSelector).text().trim();
 
       if (
         name &&
