@@ -1,5 +1,5 @@
 import axios from "axios";
-import { Card, ScryfallCard } from "../schema/schema";
+import { Card, ScryfallCard } from "../schema/Schema";
 
 export function scryfallifyDeck(deck: Card[]): Promise<ScryfallCard[]> {
   const url = "https://api.scryfall.com/cards/collection";

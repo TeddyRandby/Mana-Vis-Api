@@ -1,7 +1,7 @@
 import axios from "axios";
 import cheerio from "cheerio";
 
-import { Card } from "../schema/schema";
+import { Card } from "../schema/Schema";
 
 interface scrapeConfig {
   url: string;
@@ -53,9 +53,12 @@ async function scrape(config: scrapeConfig): Promise<Card[]> {
 }
 
 export function scrapeDeck(url: string): Promise<Card[]> {
-  if (url.includes("https://www.mtggoldfish.com")) return goldfish(url);
-  if (url.includes("https://www.tappedout.net")) return tapped(url);
-  return Promise.reject("We can't parse " + url + " yet. We're working on it!");
+  if (url.includes("mtggoldfish.com"))
+    return goldfish(url);
+  else if (url.includes("tappedout.net"))
+    return tapped(url);
+  else
+    return Promise.reject("We can't parse " + url + " yet. We're working on it!");
 }
 
 // Scrapers for various deck sites begin here

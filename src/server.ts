@@ -2,7 +2,7 @@ import "reflect-metadata";
 
 import { ApolloServer } from "apollo-server";
 import { buildSchema } from "type-graphql";
-import { RootResolver } from "./schema/schema";
+import { RootResolver } from "./schema/Schema";
 
 const serve = async () => {
   const server = new ApolloServer({
