@@ -28,7 +28,7 @@ function scrape(config) {
             let cards = [];
             deckSection.each((_, elem) => {
                 const count = parseInt($(elem).find(config.relativeCardCountSelector).text());
-                const name = $(elem).find(config.relativeCardNameSelector).text();
+                const name = $(elem).find(config.relativeCardNameSelector).text().trim();
                 if (name &&
                     count &&
                     !cards.find((c) => c.name === name && c.count === count))
@@ -49,11 +49,12 @@ function scrape(config) {
     });
 }
 function scrapeDeck(url) {
-    if (url.includes("https://www.mtggoldfish.com"))
+    if (url.includes("mtggoldfish.com"))
         return goldfish(url);
-    if (url.includes("https://www.tappedout.net"))
+    else if (url.includes("tappedout.net"))
         return tapped(url);
-    return Promise.reject("We can't parse " + url + " yet. We're working on it!");
+    else
+        return Promise.reject("We can't parse " + url + " yet. We're working on it!");
 }
 exports.scrapeDeck = scrapeDeck;
 // Scrapers for various deck sites begin here

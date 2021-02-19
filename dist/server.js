@@ -12,10 +12,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 require("reflect-metadata");
 const apollo_server_1 = require("apollo-server");
 const type_graphql_1 = require("type-graphql");
-const schema_1 = require("./schema/schema");
+const Schema_1 = require("./schema/Schema");
 const serve = () => __awaiter(void 0, void 0, void 0, function* () {
     const server = new apollo_server_1.ApolloServer({
-        schema: yield type_graphql_1.buildSchema({ resolvers: [schema_1.RootResolver] }),
+        schema: yield type_graphql_1.buildSchema({ resolvers: [Schema_1.RootResolver] }),
     });
     server.listen({ port: process.env.PORT || 4000 }).then(({ url }) => {
         console.log(`Server ready at ${url}`);
