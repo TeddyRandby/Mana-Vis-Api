@@ -79,12 +79,6 @@ export class WUBRGC {
   generic: number;
 }
 
-@ObjectType()
-export class Manified {
-  @Field(() => [ManaCard])
-  manaDeck: ManaCard[];
-}
-
 @InputType("DeckInput")
 export class Deck {
   @Field(() => [Card])
@@ -104,7 +98,7 @@ export class RootResolver {
     return data;
   }
 
-  @Query(() => Manified)
+  @Query(() => [ManaCard])
   async manifyURL(@Arg("url") url: string) {
     return await manifyDeck(await scryfallifyDeck(await scrapeDeck(url)));
   }
@@ -114,7 +108,7 @@ export class RootResolver {
     return await scryfallifyDeck(deck.cards);
   }
 
-  @Query(() => Manified, { nullable: true })
+  @Query(() => [ManaCard], { nullable: true })
   async manifyDeck(@Arg("deck") deck: Deck) {
     return await manifyDeck(await scryfallifyDeck(deck.cards));
   }
