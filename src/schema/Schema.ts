@@ -83,12 +83,6 @@ export class WUBRGC {
 export class Manified {
   @Field(() => [ManaCard])
   manaDeck: ManaCard[];
-
-  @Field(() => WUBRGC)
-  sources: WUBRGC;
-
-  @Field(() => WUBRGC)
-  costs: WUBRGC;
 }
 
 @InputType("DeckInput")

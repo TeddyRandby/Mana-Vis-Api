@@ -127,14 +127,6 @@ __decorate([
     type_graphql_1.Field(() => [ManaCard]),
     __metadata("design:type", Array)
 ], Manified.prototype, "manaDeck", void 0);
-__decorate([
-    type_graphql_1.Field(() => WUBRGC),
-    __metadata("design:type", WUBRGC)
-], Manified.prototype, "sources", void 0);
-__decorate([
-    type_graphql_1.Field(() => WUBRGC),
-    __metadata("design:type", WUBRGC)
-], Manified.prototype, "costs", void 0);
 Manified = __decorate([
     type_graphql_1.ObjectType()
 ], Manified);

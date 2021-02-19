@@ -5,64 +5,67 @@ function manifyDeck(deck) {
     return new Promise((resolve, reject) => {
         if (!deck)
             reject("Invalid deck");
-        const sources = calculateManaSources(deck);
-        const costs = calculateManaCosts(deck);
-        const manaDeck = deck.map((c) => (Object.assign(Object.assign({}, c), { score: 0 })));
-        resolve({ sources, costs, manaDeck });
+        let cardTotals = {};
+        for (let i = 0; i < 500; i++)
+            simulateGame(deck, cardTotals, 5);
+        const manaDeck = deck.map((c) => (Object.assign(Object.assign({}, c), { score: (cardTotals[c.name] / 5) || 0 })));
+        resolve({ manaDeck });
     });
 }
 exports.manifyDeck = manifyDeck;
-function pullPips(text, mb) {
-    // Scryfall format for mana costs
-    //  Ex: {W} {U} {U} {4}
-    const matches = text.match(/\{.\}/g);
-    for (const match of matches) {
-        // The pip is the middle char. Ex: { W }
-        const pip = match.substr(1, 1);
-        if ("WUBRGC".includes(pip)) {
-            mb[pip] += 1;
+function populateDeck(cards) {
+    return cards.slice().reduce((acc, curr) => {
+        for (let i = 0; i < curr.count; i++) {
+            acc.push(curr);
         }
-        else if (parseInt(pip)) {
-            mb.generic += parseInt(pip);
-        }
-    }
+        return acc;
+    }, []);
 }
-function calculateManaCosts(deck) {
-    let mb = { W: 0, U: 0, B: 0, R: 0, G: 0, C: 0, generic: 0 };
-    for (const card of deck) {
-        const mana = calcManaCost(card);
-        mb = accumulateWUBRGC(mb, mana);
+function sampleWithRemoval(arr, count) {
+    if (count > 0) {
+        let index = Math.floor(Math.random() * arr.length);
+        let val = arr[index];
+        arr.splice(index, 1);
+        return [val, ...sampleWithRemoval(arr, count - 1)];
     }
-    return mb;
+    return [];
 }
-function calcManaCost(card) {
-    if (card.type_line !== "Land") {
-        let mb = { W: 0, U: 0, B: 0, R: 0, G: 0, C: 0, generic: 0 };
-        if (card.mana_cost)
-            pullPips(card.mana_cost, mb);
-        return mb;
+function simulateGame(deck, cardTotals, turnLimit) {
+    for (let i = 1; i < turnLimit; i++) {
+        let cards = simulateTurn(populateDeck(deck), i);
+        cards.forEach((c) => {
+            cardTotals[c.name] = (cardTotals[c.name] || 0) + (c.castable ? 1 : 0);
+        });
     }
-    else {
-        return undefined;
-    }
+    return cardTotals;
 }
-function accumulateWUBRGC(a, b) {
-    return {
-        W: a.W + b.W,
-        U: a.U + b.U,
-        B: a.B + b.B,
-        R: a.R + b.R,
-        G: a.G + b.G,
-        C: a.C + b.C,
-        generic: a.generic + b.generic,
-    };
+function simulateTurn(deck, turn) {
+    const cards = sampleWithRemoval(deck, 7 + turn);
+    const lands = cards.filter(c => c.type_line.match(/(Land)/g));
+    const prod = parseProduction(lands);
+    const curves = cards.filter(c => c.cmc === turn);
+    return curves.map(c => (Object.assign(Object.assign({}, c), { castable: castable(c, prod, lands.length) })));
 }
-function calculateManaSources(deck) {
-    let mb = { W: 0, U: 0, B: 0, R: 0, G: 0, C: 0, generic: 0 };
-    for (const card of deck) {
-        if (card.type_line === "Land") {
-            pullPips(card.oracle_text, mb);
-        }
-    }
-    return mb;
+function castable(card, prod, landCount) {
+    let cost = {};
+    ["W", "U", "B", "R", "G", "C"].forEach((pip) => {
+        const matches = card.mana_cost.match(new RegExp(pip));
+        cost[pip] = matches ? matches.length : 0;
+    });
+    let cardIsCastable = true;
+    ["W", "U", "B", "R", "G", "C"].forEach((pip) => {
+        if (prod[pip] < cost[pip] || landCount < card.cmc)
+            cardIsCastable = false;
+    });
+    return cardIsCastable;
+}
+const exceptions = /(Prismatic Vista)|(Fabled Passage)|(Ancient Ziggurat)|(Cavern of Souls)|(Unclaimed Territory)|(City of Brass)|(Gemstone Mine)|(Mana Confluence)|(Gemstone Caverns)|(Wooded Foothills)|(Verdant Catacombs)|(Misty Rainforest)|(Windswept Heath)|(Flooded Strand)|(Polluted Delta)|(Scalding Tarn)|(Bloodstained Mire)|(Arid Mesa)|(Marsh Flats)/g;
+function parseProduction(lands) {
+    return lands.reduce((pips, land) => {
+        if (land.name.match(exceptions))
+            ["W", "U", "B", "R", "G", "C"].forEach((pip) => pips[pip] = (pips[pip] || 0) + 1);
+        else
+            land.color_identity.forEach((pip) => pips[pip] = (pips[pip] || 0) + 1);
+        return pips;
+    }, {});
 }
