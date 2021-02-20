@@ -26,7 +26,7 @@ function simulateTurn(deck, turn) {
     const cards = sampleWithRemoval(deck, 7 + turn);
     const lands = cards.filter(c => c.type_line.match(/(Land)/g));
     const prod = parseProduction(lands);
-    const curves = cards.filter(c => c.cmc === turn && c.type_line.match(/!(Land)/g));
+    const curves = cards.filter(c => c.cmc === turn && !c.type_line.match(/(Land)/g));
     return curves.map(c => (Object.assign(Object.assign({}, c), { castable: castable(c, prod, lands.length) })));
 }
 function populateDeck(cards) {
