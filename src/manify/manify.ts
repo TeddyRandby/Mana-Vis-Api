@@ -5,7 +5,7 @@ export function manifyDeck(deck: ScryfallCard[]): Promise<ManaCard[]> {
   return new Promise((resolve, reject) => {
 
     const turns = 6;
-    const games = turns * 100;
+    const games = turns * 1000;
 
     if (!deck) reject("Invalid deck");
 
@@ -28,20 +28,20 @@ function simulateGame(deck: ScryfallCard[], cardTotals: any,cardAppearences: any
   let opener = sampleWithRemoval(simDeck, 7)
   // Take turns, starting with turn 0
   for (let i = 0; i < turnLimit; i++){
+    // Draw a card for the next turn.
+    opener.push(sampleWithRemoval(simDeck, 1)[0])
     // Simulate the turn (parsing production of lands, calculating castable cards)
     let cards = simulateTurn(opener, i)
     cards.forEach((c,i)=>{
-      cardTotals[c.name] = (cardTotals[c.name] || 0) + (c.castable ? 1 : 0)
-      curveTotals[c.name] = (curveTotals[c.name] || 0) + (c.onCurve && c.castable ? 1 : 0)
       // If the card was cast, remove it and add it to appearences
-      if (c.castable && c.type_line.match(/Land/g)){
-        opener.splice(i, 1)
+      if (c.castable && !c.type_line.match(/(Land)/g)){
+        cardTotals[c.name] = (cardTotals[c.name] || 0) + 1 
+        curveTotals[c.name] = (curveTotals[c.name] || 0) + (c.onCurve ? 1 : 0)
         cardAppearences[c.name] = (cardAppearences[c.name] || 0) + 1
+        opener.splice(i, 1)
       }
 
     })
-    // Draw a card for the next turn.
-    opener.push(...sampleWithRemoval(simDeck, 1))
   }
 
   // Count each card in the hand over all the turns that wasn't cast
