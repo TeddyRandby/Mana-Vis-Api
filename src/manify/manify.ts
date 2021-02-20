@@ -8,10 +8,10 @@ export function manifyDeck(deck: ScryfallCard[]): Promise<ManaCard[]> {
 
 
     let cardTotals = {};
-    for (let i = 0; i < 500; i++)
-      simulateGame(deck, cardTotals, 5)
+    for (let i = 0; i < 600; i++)
+      simulateGame(deck, cardTotals, 6)
 
-    const manaDeck: ManaCard[] = deck.map((c) => ({ ...c, score: (cardTotals[c.name] / 5) || 0 }));
+    const manaDeck: ManaCard[] = deck.map((c) => ({ ...c, score: (cardTotals[c.name] / 6) || 0 }));
 
     resolve(manaDeck);
   });
@@ -38,7 +38,7 @@ function sampleWithRemoval(arr: any[], count: number): ScryfallCard[]{
 }
 
 function simulateGame(deck: ScryfallCard[],cardTotals: any, turnLimit: number) {
-  for (let i = 1; i < turnLimit; i++){
+  for (let i = 1; i < turnLimit + 1; i++){
     let cards = simulateTurn(populateDeck(deck), i)
     cards.forEach((c)=>{
       cardTotals[c.name] = (cardTotals[c.name] || 0) + (c.castable ? 1 : 0)
