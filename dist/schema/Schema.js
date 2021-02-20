@@ -83,6 +83,14 @@ __decorate([
     type_graphql_1.Field(),
     __metadata("design:type", Number)
 ], ManaCard.prototype, "score", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", Number)
+], ManaCard.prototype, "appearences", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", Number)
+], ManaCard.prototype, "onCurve", void 0);
 ManaCard = __decorate([
     type_graphql_1.ObjectType({ implements: ScryfallCard })
 ], ManaCard);

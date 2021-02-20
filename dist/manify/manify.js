@@ -3,31 +3,49 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.manifyDeck = void 0;
 function manifyDeck(deck) {
     return new Promise((resolve, reject) => {
+        const turns = 6;
+        const games = turns * 100;
         if (!deck)
             reject("Invalid deck");
         let cardTotals = {};
-        for (let i = 0; i < 600; i++)
-            simulateGame(deck, cardTotals, 6);
-        const manaDeck = deck.map((c) => (Object.assign(Object.assign({}, c), { score: (cardTotals[c.name] / 6) || 0 })));
+        let curveTotals = {};
+        let cardAppearences = {};
+        for (let i = 0; i < games; i++)
+            simulateGame(deck, cardTotals, cardAppearences, curveTotals, turns);
+        const manaDeck = deck.map((c) => (Object.assign(Object.assign({}, c), { score: (cardTotals[c.name] / cardAppearences[c.name]) || 0, appearences: (cardAppearences[c.name] / games), onCurve: (curveTotals[c.name] / cardTotals[c.name] || 0) })));
         resolve(manaDeck);
     });
 }
 exports.manifyDeck = manifyDeck;
-function simulateGame(deck, cardTotals, turnLimit) {
-    for (let i = 1; i < turnLimit + 1; i++) {
-        let cards = simulateTurn(populateDeck(deck), i);
-        cards.forEach((c) => {
+function simulateGame(deck, cardTotals, cardAppearences, curveTotals, turnLimit) {
+    // Populate deck based on card counts
+    let simDeck = populateDeck(deck);
+    // Draw a 7 card opener
+    let opener = sampleWithRemoval(simDeck, 7);
+    // Take turns, starting with turn 0
+    for (let i = 0; i < turnLimit; i++) {
+        // Simulate the turn (parsing production of lands, calculating castable cards)
+        let cards = simulateTurn(opener, i);
+        cards.forEach((c, i) => {
             cardTotals[c.name] = (cardTotals[c.name] || 0) + (c.castable ? 1 : 0);
+            curveTotals[c.name] = (curveTotals[c.name] || 0) + (c.onCurve && c.castable ? 1 : 0);
+            // If the card was cast, remove it and add it to appearences
+            if (c.castable && c.type_line.match(/Land/g)) {
+                opener.splice(i, 1);
+                cardAppearences[c.name] = (cardAppearences[c.name] || 0) + 1;
+            }
         });
+        // Draw a card for the next turn.
+        opener.push(...sampleWithRemoval(simDeck, 1));
     }
+    // Count each card in the hand over all the turns that wasn't cast
+    opener.forEach(c => cardAppearences[c.name] = (cardAppearences[c.name] || 0) + 1);
     return cardTotals;
 }
-function simulateTurn(deck, turn) {
-    const cards = sampleWithRemoval(deck, 7 + turn);
-    const lands = cards.filter(c => c.type_line.match(/(Land)/g));
+function simulateTurn(hand, turn) {
+    const lands = hand.filter(c => c.type_line.match(/(Land)/g));
     const prod = parseProduction(lands);
-    const curves = cards.filter(c => c.cmc === turn && !c.type_line.match(/(Land)/g));
-    return curves.map(c => (Object.assign(Object.assign({}, c), { castable: castable(c, prod, lands.length) })));
+    return hand.map(c => (Object.assign(Object.assign({}, c), { castable: castable(c, prod, lands.length), onCurve: turn === c.cmc })));
 }
 function populateDeck(cards) {
     return cards.slice().reduce((acc, curr) => {
@@ -47,6 +65,8 @@ function sampleWithRemoval(arr, count) {
     return [];
 }
 function castable(card, prod, landCount) {
+    if (!card.mana_cost)
+        return true;
     let cost = {};
     ["W", "U", "B", "R", "G", "C"].forEach((pip) => {
         const matches = card.mana_cost.match(pip);

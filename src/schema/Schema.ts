@@ -53,6 +53,12 @@ export class ScryfallCard extends Card {
 export class ManaCard extends ScryfallCard {
   @Field()
   score: number;
+
+  @Field()
+  appearences: number;
+
+  @Field()
+  onCurve: number;
 }
 
 @ObjectType()
