@@ -13,6 +13,22 @@ function manifyDeck(deck) {
     });
 }
 exports.manifyDeck = manifyDeck;
+function simulateGame(deck, cardTotals, turnLimit) {
+    for (let i = 1; i < turnLimit + 1; i++) {
+        let cards = simulateTurn(populateDeck(deck), i);
+        cards.forEach((c) => {
+            cardTotals[c.name] = (cardTotals[c.name] || 0) + (c.castable ? 1 : 0);
+        });
+    }
+    return cardTotals;
+}
+function simulateTurn(deck, turn) {
+    const cards = sampleWithRemoval(deck, 7 + turn);
+    const lands = cards.filter(c => c.type_line.match(/(Land)/g));
+    const prod = parseProduction(lands);
+    const curves = cards.filter(c => c.cmc === turn && c.type_line.match(/!(Land)/g));
+    return curves.map(c => (Object.assign(Object.assign({}, c), { castable: castable(c, prod, lands.length) })));
+}
 function populateDeck(cards) {
     return cards.slice().reduce((acc, curr) => {
         for (let i = 0; i < curr.count; i++) {
@@ -30,26 +46,10 @@ function sampleWithRemoval(arr, count) {
     }
     return [];
 }
-function simulateGame(deck, cardTotals, turnLimit) {
-    for (let i = 1; i < turnLimit + 1; i++) {
-        let cards = simulateTurn(populateDeck(deck), i);
-        cards.forEach((c) => {
-            cardTotals[c.name] = (cardTotals[c.name] || 0) + (c.castable ? 1 : 0);
-        });
-    }
-    return cardTotals;
-}
-function simulateTurn(deck, turn) {
-    const cards = sampleWithRemoval(deck, 7 + turn);
-    const lands = cards.filter(c => c.type_line.match(/(Land)/g));
-    const prod = parseProduction(lands);
-    const curves = cards.filter(c => c.cmc === turn);
-    return curves.map(c => (Object.assign(Object.assign({}, c), { castable: castable(c, prod, lands.length) })));
-}
 function castable(card, prod, landCount) {
     let cost = {};
     ["W", "U", "B", "R", "G", "C"].forEach((pip) => {
-        const matches = card.mana_cost.match(new RegExp(pip));
+        const matches = card.mana_cost.match(pip);
         cost[pip] = matches ? matches.length : 0;
     });
     let cardIsCastable = true;
