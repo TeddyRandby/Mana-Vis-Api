@@ -15,7 +15,7 @@ export function manifyDeck(deck: ScryfallCard[]): Promise<ManaCard[]> {
     for (let i = 0; i < games; i++)
       simulateGame(deck, cardTotals, cardAppearences, curveTotals, turns)
 
-    const manaDeck: ManaCard[] = deck.map((c) => ({ ...c, score: (cardTotals[c.name] / cardAppearences[c.name]) || 0 , appearences: (cardAppearences[c.name] / games), onCurve: (curveTotals[c.name] / cardTotals[c.name] || 0 )}));
+    const manaDeck: ManaCard[] = deck.map((c) => ({ ...c, score: (cardTotals[c.name] / cardAppearences[c.name]) || 0 , appearences: games / (cardAppearences[c.name]), onCurve: (curveTotals[c.name] / cardTotals[c.name] || 0 )}));
 
     resolve(manaDeck);
   });
@@ -27,18 +27,18 @@ function simulateGame(deck: ScryfallCard[], cardTotals: any,cardAppearences: any
   // Draw a 7 card opener
   let opener = sampleWithRemoval(simDeck, 7)
   // Take turns, starting with turn 0
-  for (let i = 0; i < turnLimit; i++){
+  for (let i = 1; i < turnLimit + 1; i++){
     // Draw a card for the next turn.
     opener.push(sampleWithRemoval(simDeck, 1)[0])
     // Simulate the turn (parsing production of lands, calculating castable cards)
     let cards = simulateTurn(opener, i)
-    cards.forEach((c,i)=>{
+    cards.forEach((c)=>{
       // If the card was cast, remove it and add it to appearences
-      if (c.castable && !c.type_line.match(/(Land)/g)){
+      if (c.castable && !c.type_line.includes("Land")){
         cardTotals[c.name] = (cardTotals[c.name] || 0) + 1 
         curveTotals[c.name] = (curveTotals[c.name] || 0) + (c.onCurve ? 1 : 0)
         cardAppearences[c.name] = (cardAppearences[c.name] || 0) + 1
-        opener.splice(i, 1)
+        opener.splice(opener.findIndex((s)=>s.name === c.name), 1)
       }
 
     })
@@ -53,7 +53,7 @@ function simulateGame(deck: ScryfallCard[], cardTotals: any,cardAppearences: any
 function simulateTurn(hand: ScryfallCard[], turn: number) {
   const lands = hand.filter(c=>c.type_line.match(/(Land)/g))
   const prod = parseProduction(lands)
-  return hand.map(c=>({...c, castable: castable(c, prod, lands.length), onCurve: turn === c.cmc}))
+  return hand.map(c=>({...c, castable: castable(c, prod, lands.length, turn), onCurve: turn === c.cmc}))
 }
 
 
@@ -78,7 +78,7 @@ function sampleWithRemoval(arr: any[], count: number): ScryfallCard[]{
 }
 
 
-function castable(card: ScryfallCard, prod: WUBRGC, landCount: number) {
+function castable(card: ScryfallCard, prod: WUBRGC, landCount: number, turn: number) {
   if (!card.mana_cost)
     return true;
 
@@ -90,7 +90,7 @@ function castable(card: ScryfallCard, prod: WUBRGC, landCount: number) {
 
   let cardIsCastable = true;
   ["W", "U", "B", "R", "G", "C"].forEach((pip)=> {
-    if (prod[pip] <  cost[pip] || landCount < card.cmc)
+    if (prod[pip] <  cost[pip] || landCount < card.cmc || turn < card.cmc)
       cardIsCastable = false
   })
   return cardIsCastable
