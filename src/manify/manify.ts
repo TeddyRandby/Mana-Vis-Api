@@ -5,7 +5,7 @@ export function manifyDeck(deck: ScryfallCard[]): Promise<ManaCard[]> {
   return new Promise((resolve, reject) => {
 
     const turns = 6;
-    const games = turns * 1000;
+    const games = turns * 100;
 
     if (!deck) reject("Invalid deck");
 

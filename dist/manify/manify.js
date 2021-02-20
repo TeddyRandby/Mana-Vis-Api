@@ -4,7 +4,7 @@ exports.manifyDeck = void 0;
 function manifyDeck(deck) {
     return new Promise((resolve, reject) => {
         const turns = 6;
-        const games = turns * 1000;
+        const games = turns * 100;
         if (!deck)
             reject("Invalid deck");
         let cardTotals = {};
