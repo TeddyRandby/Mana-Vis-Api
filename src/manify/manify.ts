@@ -107,8 +107,9 @@ function parseCost(card: ScryfallCard): Pip[] {
   return Object.entries(costCounts).reduce((pips, pair)=>{
     const [key, amount] = pair;
 
-    const colors = key.match(/W|U|B|R|G|C/g) ?? []
-    
+    const matches = key.match(/W|U|B|R|G|C/g) ?? []
+    const colors = matches.join('')
+
     return [...pips, {colors, amount} ]
 
   }, [])

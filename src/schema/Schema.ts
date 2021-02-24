@@ -51,8 +51,8 @@ export class ScryfallCard extends Card {
 
 @ObjectType()
 export class Pip {
-  @Field(()=>[String])
-  colors: string[]
+  @Field(()=>String)
+  colors: string
 
   @Field()
   amount: number

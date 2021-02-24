@@ -82,7 +82,8 @@ function parseCost(card) {
     return Object.entries(costCounts).reduce((pips, pair) => {
         var _a;
         const [key, amount] = pair;
-        const colors = (_a = key.match(/W|U|B|R|G|C/g)) !== null && _a !== void 0 ? _a : [];
+        const matches = (_a = key.match(/W|U|B|R|G|C/g)) !== null && _a !== void 0 ? _a : [];
+        const colors = matches.join('');
         return [...pips, { colors, amount }];
     }, []);
 }

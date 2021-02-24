@@ -76,8 +76,8 @@ exports.ScryfallCard = ScryfallCard;
 let Pip = class Pip {
 };
 __decorate([
-    type_graphql_1.Field(() => [String]),
-    __metadata("design:type", Array)
+    type_graphql_1.Field(() => String),
+    __metadata("design:type", String)
 ], Pip.prototype, "colors", void 0);
 __decorate([
     type_graphql_1.Field(),
