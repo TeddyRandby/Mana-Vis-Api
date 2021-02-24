@@ -21,7 +21,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.RootResolver = exports.Deck = exports.WUBRGC = exports.ManaCard = exports.ScryfallCard = exports.Card = void 0;
+exports.RootResolver = exports.Deck = exports.ManaCard = exports.Pip = exports.ScryfallCard = exports.Card = void 0;
 const type_graphql_1 = require("type-graphql");
 const scraper_1 = require("../scraper/scraper");
 const scryfallify_1 = require("../scryfall/scryfallify");
@@ -49,10 +49,6 @@ __decorate([
     __metadata("design:type", String)
 ], ScryfallCard.prototype, "scryfall_uri", void 0);
 __decorate([
-    type_graphql_1.Field({ nullable: true }),
-    __metadata("design:type", String)
-], ScryfallCard.prototype, "mana_cost", void 0);
-__decorate([
     type_graphql_1.Field(),
     __metadata("design:type", Number)
 ], ScryfallCard.prototype, "cmc", void 0);
@@ -77,6 +73,20 @@ ScryfallCard = __decorate([
     type_graphql_1.InterfaceType("ScryfallCardInterface")
 ], ScryfallCard);
 exports.ScryfallCard = ScryfallCard;
+let Pip = class Pip {
+};
+__decorate([
+    type_graphql_1.Field(() => [String]),
+    __metadata("design:type", Array)
+], Pip.prototype, "colors", void 0);
+__decorate([
+    type_graphql_1.Field(),
+    __metadata("design:type", Number)
+], Pip.prototype, "amount", void 0);
+Pip = __decorate([
+    type_graphql_1.ObjectType()
+], Pip);
+exports.Pip = Pip;
 let ManaCard = class ManaCard extends ScryfallCard {
 };
 __decorate([
@@ -91,44 +101,14 @@ __decorate([
     type_graphql_1.Field(),
     __metadata("design:type", Number)
 ], ManaCard.prototype, "onCurve", void 0);
+__decorate([
+    type_graphql_1.Field(() => [Pip]),
+    __metadata("design:type", Array)
+], ManaCard.prototype, "pips", void 0);
 ManaCard = __decorate([
     type_graphql_1.ObjectType({ implements: ScryfallCard })
 ], ManaCard);
 exports.ManaCard = ManaCard;
-let WUBRGC = class WUBRGC {
-};
-__decorate([
-    type_graphql_1.Field(),
-    __metadata("design:type", Number)
-], WUBRGC.prototype, "W", void 0);
-__decorate([
-    type_graphql_1.Field(),
-    __metadata("design:type", Number)
-], WUBRGC.prototype, "U", void 0);
-__decorate([
-    type_graphql_1.Field(),
-    __metadata("design:type", Number)
-], WUBRGC.prototype, "B", void 0);
-__decorate([
-    type_graphql_1.Field(),
-    __metadata("design:type", Number)
-], WUBRGC.prototype, "R", void 0);
-__decorate([
-    type_graphql_1.Field(),
-    __metadata("design:type", Number)
-], WUBRGC.prototype, "G", void 0);
-__decorate([
-    type_graphql_1.Field(),
-    __metadata("design:type", Number)
-], WUBRGC.prototype, "C", void 0);
-__decorate([
-    type_graphql_1.Field(),
-    __metadata("design:type", Number)
-], WUBRGC.prototype, "generic", void 0);
-WUBRGC = __decorate([
-    type_graphql_1.ObjectType()
-], WUBRGC);
-exports.WUBRGC = WUBRGC;
 let Deck = class Deck {
 };
 __decorate([

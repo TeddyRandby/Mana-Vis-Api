@@ -27,11 +27,10 @@ export class Card {
 @ObjectType({ implements: Card })
 @InterfaceType("ScryfallCardInterface")
 export class ScryfallCard extends Card {
+  mana_cost?: string;
+
   @Field()
   scryfall_uri: string;
-
-  @Field({ nullable: true })
-  mana_cost?: string;
 
   @Field()
   cmc: number;
@@ -49,6 +48,16 @@ export class ScryfallCard extends Card {
   oracle_text?: string;
 }
 
+
+@ObjectType()
+export class Pip {
+  @Field(()=>[String])
+  colors: string[]
+
+  @Field()
+  amount: number
+}
+
 @ObjectType({ implements: ScryfallCard })
 export class ManaCard extends ScryfallCard {
   @Field()
@@ -59,30 +68,9 @@ export class ManaCard extends ScryfallCard {
 
   @Field()
   onCurve: number;
-}
 
-@ObjectType()
-export class WUBRGC {
-  @Field()
-  W: number;
-
-  @Field()
-  U: number;
-
-  @Field()
-  B: number;
-
-  @Field()
-  R: number;
-
-  @Field()
-  G: number;
-
-  @Field()
-  C: number;
-
-  @Field()
-  generic: number;
+  @Field(()=>[Pip])
+  pips: Pip[];
 }
 
 @InputType("DeckInput")

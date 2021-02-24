@@ -12,7 +12,9 @@ function manifyDeck(deck) {
         let cardAppearences = {};
         for (let i = 0; i < games; i++)
             simulateGame(deck, cardTotals, cardAppearences, curveTotals, turns);
-        const manaDeck = deck.map((c) => (Object.assign(Object.assign({}, c), { score: (cardTotals[c.name] / cardAppearences[c.name]) || 0, appearences: games / (cardAppearences[c.name]), onCurve: (curveTotals[c.name] / cardTotals[c.name] || 0) })));
+        const manaDeck = deck.map((c) => {
+            return (Object.assign(Object.assign({}, c), { score: (cardTotals[c.name] / cardAppearences[c.name]) || 0, appearences: games / (cardAppearences[c.name]), onCurve: (curveTotals[c.name] / cardTotals[c.name] || 0), pips: parseCost(c) }));
+        });
         resolve(manaDeck);
     });
 }
@@ -64,14 +66,30 @@ function sampleWithRemoval(arr, count) {
     }
     return [];
 }
+function parseCost(card) {
+    if (!card.mana_cost)
+        return [];
+    const costCounts = {};
+    const generic = card.mana_cost.match(/{\d}/g);
+    if (generic)
+        costCounts["{g}"] = parseInt(generic[0][1]);
+    const orCosts = card.mana_cost.match(/{[WUBRGC]\/[WUBRGC]}/g);
+    if (orCosts)
+        orCosts.forEach(cst => { var _a; return costCounts[cst] = ((_a = costCounts[cst]) !== null && _a !== void 0 ? _a : 0) + 1; });
+    const costs = card.mana_cost.match(/{[WUBRGC]}/g);
+    if (costs)
+        costs.forEach(cost => { var _a; return costCounts[cost] = ((_a = costCounts[cost]) !== null && _a !== void 0 ? _a : 0) + 1; });
+    return Object.entries(costCounts).reduce((pips, pair) => {
+        var _a;
+        const [key, amount] = pair;
+        const colors = (_a = key.match(/W|U|B|R|G|C/g)) !== null && _a !== void 0 ? _a : [];
+        return [...pips, { colors, amount }];
+    }, []);
+}
 function castable(card, prod, landCount, turn) {
     if (!card.mana_cost)
         return true;
-    let cost = {};
-    ["W", "U", "B", "R", "G", "C"].forEach((pip) => {
-        const matches = card.mana_cost.match(pip);
-        cost[pip] = matches ? matches.length : 0;
-    });
+    const cost = parseCost(card);
     let cardIsCastable = true;
     ["W", "U", "B", "R", "G", "C"].forEach((pip) => {
         if (prod[pip] < cost[pip] || landCount < card.cmc || turn < card.cmc)
@@ -83,7 +101,7 @@ const exceptions = /(Prismatic Vista)|(Fabled Passage)|(Ancient Ziggurat)|(Caver
 function parseProduction(lands) {
     return lands.reduce((pips, land) => {
         if (land.name.match(exceptions))
-            ["W", "U", "B", "R", "G", "C"].forEach((pip) => pips[pip] = (pips[pip] || 0) + 1);
+            ["W", "U", "B", "R", "G"].forEach((pip) => pips[pip] = (pips[pip] || 0) + 1);
         else
             land.color_identity.forEach((pip) => pips[pip] = (pips[pip] || 0) + 1);
         return pips;

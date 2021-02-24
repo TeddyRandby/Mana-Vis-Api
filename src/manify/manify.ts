@@ -1,4 +1,4 @@
-import { ScryfallCard, ManaCard, WUBRGC } from "../schema/Schema";
+import { ScryfallCard, ManaCard, Pip } from "../schema/Schema";
 
 
 export function manifyDeck(deck: ScryfallCard[]): Promise<ManaCard[]> {
@@ -15,7 +15,16 @@ export function manifyDeck(deck: ScryfallCard[]): Promise<ManaCard[]> {
     for (let i = 0; i < games; i++)
       simulateGame(deck, cardTotals, cardAppearences, curveTotals, turns)
 
-    const manaDeck: ManaCard[] = deck.map((c) => ({ ...c, score: (cardTotals[c.name] / cardAppearences[c.name]) || 0 , appearences: games / (cardAppearences[c.name]), onCurve: (curveTotals[c.name] / cardTotals[c.name] || 0 )}));
+    const manaDeck: ManaCard[] = deck.map((c) => {
+      return ({ 
+        ...c,
+        score: (cardTotals[c.name] / cardAppearences[c.name]) || 0,
+        appearences: games / (cardAppearences[c.name]),
+        onCurve: (curveTotals[c.name] / cardTotals[c.name] || 0 ),
+        pips: parseCost(c)
+      })
+
+    });
 
     resolve(manaDeck);
   });
@@ -77,16 +86,41 @@ function sampleWithRemoval(arr: any[], count: number): ScryfallCard[]{
   return []
 }
 
+function parseCost(card: ScryfallCard): Pip[] {
+  if (!card.mana_cost)
+    return []
+  
+  const costCounts = {}
 
-function castable(card: ScryfallCard, prod: WUBRGC, landCount: number, turn: number) {
+  const generic = card.mana_cost.match(/{\d}/g)
+  if (generic)
+    costCounts["{g}"] = parseInt(generic[0][1])
+
+  const orCosts = card.mana_cost.match(/{[WUBRGC]\/[WUBRGC]}/g)
+  if (orCosts)
+    orCosts.forEach(cst=>costCounts[cst] = (costCounts[cst] ?? 0) + 1)
+
+  const costs = card.mana_cost.match(/{[WUBRGC]}/g)
+  if (costs)
+    costs.forEach(cost=>costCounts[cost] = (costCounts[cost] ?? 0) + 1)
+
+  return Object.entries(costCounts).reduce((pips, pair)=>{
+    const [key, amount] = pair;
+
+    const colors = key.match(/W|U|B|R|G|C/g) ?? []
+    
+    return [...pips, {colors, amount} ]
+
+  }, [])
+  
+}
+
+
+function castable(card: ScryfallCard, prod: any, landCount: number, turn: number) {
   if (!card.mana_cost)
     return true;
 
-  let cost = {};
-  ["W", "U", "B", "R", "G", "C"].forEach((pip) => {
-    const matches = card.mana_cost.match(pip) 
-    cost[pip] = matches ? matches.length : 0
-  })
+  const cost = parseCost(card)
 
   let cardIsCastable = true;
   ["W", "U", "B", "R", "G", "C"].forEach((pip)=> {
@@ -98,10 +132,10 @@ function castable(card: ScryfallCard, prod: WUBRGC, landCount: number, turn: num
 
 
 const exceptions = /(Prismatic Vista)|(Fabled Passage)|(Ancient Ziggurat)|(Cavern of Souls)|(Unclaimed Territory)|(City of Brass)|(Gemstone Mine)|(Mana Confluence)|(Gemstone Caverns)|(Wooded Foothills)|(Verdant Catacombs)|(Misty Rainforest)|(Windswept Heath)|(Flooded Strand)|(Polluted Delta)|(Scalding Tarn)|(Bloodstained Mire)|(Arid Mesa)|(Marsh Flats)/g
-function parseProduction(lands: ScryfallCard[]): WUBRGC {
+function parseProduction(lands: ScryfallCard[]): any {
   return lands.reduce((pips: any, land: any) => {
     if (land.name.match(exceptions))
-      ["W", "U", "B", "R", "G", "C"].forEach((pip: string) => pips[pip] = (pips[pip] || 0) + 1)
+      ["W", "U", "B", "R", "G"].forEach((pip: string) => pips[pip] = (pips[pip] || 0) + 1)
     else
       land.color_identity.forEach((pip: string) => pips[pip] = (pips[pip] || 0) + 1)
     return pips
