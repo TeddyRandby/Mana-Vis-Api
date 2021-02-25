@@ -92,9 +92,12 @@ function castable(card, prod, landCount, turn) {
         return true;
     const cost = parseCost(card);
     let cardIsCastable = true;
-    ["W", "U", "B", "R", "G", "C"].forEach((pip) => {
-        if (prod[pip] < cost[pip] || landCount < card.cmc || turn < card.cmc)
-            cardIsCastable = false;
+    cost.forEach((pip) => {
+        const colors = pip.colors.match(/[WUBRGC]/g);
+        colors === null || colors === void 0 ? void 0 : colors.forEach(color => {
+            if (prod[color] < pip.amount || landCount < card.cmc || turn < card.cmc)
+                cardIsCastable = false;
+        });
     });
     return cardIsCastable;
 }
